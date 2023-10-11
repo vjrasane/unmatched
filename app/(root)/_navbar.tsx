@@ -21,10 +21,9 @@ export const Navbar: FunctionComponent = async () => {
       className="fixed top-0 w-full z-50 flex justify-between items-center py-2 px-4 border-b border-primary/10 bg-secondary"
     >
       <div className="flex items-center">
-        {/* <Menu className="block md:hidden" /> */}
         <Link href="/">
           <h1
-            className="text-xl md:text-3xl font-bold text-primary
+            className="text-xl md:text-3xl font-bold
           font-super-comic text-orange-400"
           >
             {config.appName.toUpperCase()}
