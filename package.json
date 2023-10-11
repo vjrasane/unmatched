@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "setup": "ts-node scripts/setup.ts"
+    "setup": "ts-node scripts/setup.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.1",
@@ -34,6 +35,7 @@
     "next": "^13.5",
     "next-auth": "^4.23.2",
     "next-themes": "^0.2.1",
+    "prisma": "^5.4.2",
     "query-string": "^8.1.0",
     "react": "^18",
     "react-code-blocks": "^0.1.4",
