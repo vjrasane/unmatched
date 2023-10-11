@@ -8,18 +8,11 @@ import Spinner from "@/components/spinner";
 import { Contestant, Match } from "@prisma/client";
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { FunctionComponent } from "react";
 import Image from "next/image";
-import { capitalize, noop } from "lodash/fp";
-import { cn } from "@/lib/utils";
+import { capitalize } from "@/lib/utils";
 
 const WinnerCard: FunctionComponent<{
   contestant: Contestant;

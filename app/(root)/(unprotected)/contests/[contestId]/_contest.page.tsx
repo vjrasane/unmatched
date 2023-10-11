@@ -26,6 +26,7 @@ import ContestantRow from "@/components/contestant-row";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
+import Spinner from "@/components/spinner";
 
 const getContest = async (id: string) => {
   const contest = await prismadb.contest.findUnique({
@@ -157,7 +158,7 @@ const ContestBanner: FunctionComponent<{
           <div className="text-5xl">{contest.name}</div>
           <div className="text-md">{contest.description}</div>
         </div>
-        <div>
+        <div className="flex gap-2">
           {session?.user.id === contest.creatorId ? (
             <Link href={`/contests/${contest.id}/edit`}>
               <Button className="gap-2">
@@ -206,7 +207,13 @@ const ContestPage: FunctionComponent<{
     <div className="h-full p-4 space-y-2 max-w-3xl mx-auto">
       <ContestBanner contestId={params.contestId} />
       <SearchInput />
-      <Suspense fallback={<div>Loading</div>}>
+      <Suspense
+        fallback={
+          <div className="w-full mx-auto py-6 flex justify-center">
+            <Spinner />
+          </div>
+        }
+      >
         <ContestantsData
           contestId={params.contestId}
           search={searchParams.search}
