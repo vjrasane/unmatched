@@ -1,7 +1,7 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { capitalize } from "@/lib/utils";
 import { Contestant } from "@prisma/client";
-import { capitalize } from "lodash/fp";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 

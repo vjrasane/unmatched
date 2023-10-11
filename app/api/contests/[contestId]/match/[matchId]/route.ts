@@ -1,22 +1,72 @@
 import prismadb from "@/lib/prismadb";
 import { MatchResult } from "@/schema/match";
 import { NextRequest, NextResponse } from "next/server";
-import EloRank from "elo-rank";
+
 import { first, partition } from "lodash/fp";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getToken } from "next-auth/jwt";
+import { ContestantWithMatches } from "@/schema/contest";
 
-const elo = new EloRank();
+const MAX_ELO_CHANGE = 128;
+const MIN_ELO_CHANGE = 4;
+const CHANGE_RATE = 0.25;
 
-const getNewRatings = (winner: number, loser: number): [number, number] => {
-  const expectedWinnerScore = elo.getExpected(winner, loser);
-  const expectedLoserScore = elo.getExpected(loser, winner);
+const exponential = (
+  games: number,
+  max: number,
+  min: number,
+  rate: number
+): number => {
+  return (max - min) / (rate * games + 1) + min;
+};
 
-  return [
-    elo.updateRating(expectedWinnerScore, 1, winner),
-    elo.updateRating(expectedLoserScore, 0, loser),
-  ];
+const getExpected = (a: number, b: number) => {
+  const exp = (b - a) / 400;
+  return 1 / (1 + Math.pow(10, exp));
+};
+
+const getRating = (
+  current: number,
+  expected: number,
+  result: number,
+  k: number = 32
+) => {
+  return current + k * (result - expected);
+};
+
+const elo = (
+  a: number,
+  b: number,
+  result: 1 | 0.5,
+  ak: number = 32,
+  bk: number = 32
+): [number, number] => {
+  const ea = getExpected(a, b);
+  const eb = getExpected(b, a);
+
+  const ar = getRating(a, ea, result, ak);
+  const br = getRating(b, eb, 1 - result, bk);
+
+  return [ar, br];
+};
+
+const getNewRatings = (
+  winner: ContestantWithMatches,
+  loser: ContestantWithMatches
+): [number, number] => {
+  const winnerK = exponential(
+    winner._count.matches,
+    MAX_ELO_CHANGE,
+    MIN_ELO_CHANGE,
+    CHANGE_RATE
+  );
+  const loserK = exponential(
+    loser._count.matches,
+    MAX_ELO_CHANGE,
+    MIN_ELO_CHANGE,
+    CHANGE_RATE
+  );
+
+  return elo(winner.elo, loser.elo, 1, winnerK, loserK);
 };
 
 const updateMatchWinner = async (
@@ -31,7 +81,15 @@ const updateMatchWinner = async (
       include: {
         contestants: {
           select: {
-            contestant: true,
+            contestant: {
+              include: {
+                _count: {
+                  select: {
+                    matches: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -48,7 +106,7 @@ const updateMatchWinner = async (
     if (winner == null || loser == null)
       throw new Error(`Ambiguous winner/loser`);
 
-    const [winnerElo, loserElo] = getNewRatings(winner.elo, loser.elo);
+    const [winnerElo, loserElo] = getNewRatings(winner, loser);
 
     await tx.contestant.update({
       where: {

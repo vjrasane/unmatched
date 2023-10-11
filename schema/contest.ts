@@ -27,9 +27,16 @@ const ContestantInput = z.object({
 
 type ContestantInput = z.infer<typeof ContestantInput>;
 
+type ContestantWithMatches = Contestant & {
+  _count: {
+    matches: number;
+  };
+};
+
 export {
   ContestInput,
   type ContestWithCount,
   type ContestWithContestants,
   ContestantInput,
+  type ContestantWithMatches,
 };

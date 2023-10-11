@@ -21,6 +21,7 @@ const SearchInput = () => {
     setValue(e.target.value);
 
   useEffect(() => {
+    if (debounced === search) return;
     const query = {
       search: debounced,
     };
@@ -31,7 +32,7 @@ const SearchInput = () => {
     );
 
     router.push(url);
-  }, [router, debounced]);
+  }, [router, debounced, search]);
 
   return (
     <div className="relative">
