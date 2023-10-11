@@ -1,0 +1,82 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Contest {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  imageSrc    String @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contestants Contestant[]
+  matches     Match[]
+
+  creatorId String?
+
+  @@index([creatorId])
+  @@fulltext([name])
+}
+
+model Contestant {
+  id       String @id @default(uuid())
+  name     String
+  imageSrc String @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contestId String
+  contest   Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  elo Int @default(1500)
+
+  matches MatchContestant[]
+
+  wins Match[] @relation("Match_winner_Contestant")
+
+  @@index([contestId])
+  @@fulltext([name])
+}
+
+model Match {
+  id String @id @default(uuid())
+
+  creatorId String
+
+  contestId String
+  contest   Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  contestants MatchContestant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  winnerId String?
+  winner   Contestant? @relation("Match_winner_Contestant", fields: [winnerId], references: [id], onDelete: Cascade)
+
+  @@index([winnerId])
+  @@index([contestId])
+  @@index([creatorId])
+}
+
+model MatchContestant {
+  contestantId String
+  contestant   Contestant @relation(fields: [contestantId], references: [id], onDelete: Cascade)
+
+  matchId String
+  match   Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@id([contestantId, matchId])
+  @@index([contestantId])
+  @@index([matchId])
+}
