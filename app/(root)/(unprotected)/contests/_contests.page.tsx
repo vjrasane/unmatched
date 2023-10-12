@@ -9,7 +9,6 @@ import {
 import Image from "next/image";
 import prismadb from "@/lib/prismadb";
 import { Page, Paginated, paginated } from "@/schema/pagination";
-import { Contest } from "@prisma/client";
 import { FunctionComponent } from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Link from "next/link";
@@ -53,7 +52,7 @@ const ContestCard: FunctionComponent<{
 }> = async ({ contest }) => {
   const session = await getServerSession(authOptions);
   return (
-    <Card className="flex flex-col cursor-pointer hover:bg-secondary/50 transition-colors">
+    <Card className="flex flex-col cursor-pointer hover:bg-secondary/75 transition-colors">
       <Link href={`/contests/${contest.id}`}>
         <CardHeader>
           <CardTitle>{contest.name}</CardTitle>
