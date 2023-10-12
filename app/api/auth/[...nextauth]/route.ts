@@ -3,6 +3,7 @@ import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
 import GithubProvider, { GithubProfile } from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { Credentials } from "@/schema/credentials";
+import { env } from "@/env";
 
 const authOptions: AuthOptions = {
   session: {
@@ -36,8 +37,8 @@ const authOptions: AuthOptions = {
     //   },
     // }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
       authorization: {
         params: {
           prompt: "consent",
@@ -54,8 +55,8 @@ const authOptions: AuthOptions = {
       },
     }),
     GithubProvider({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
+      clientId: env.GITHUB_CLIENT_ID,
+      clientSecret: env.GITHUB_CLIENT_SECRET,
       profile: (profile: GithubProfile) => {
         return {
           ...profile,

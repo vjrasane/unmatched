@@ -38,10 +38,11 @@ export const UserProfileMenu: FunctionComponent<{
         <DropdownMenuContent>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-
+          <DialogTrigger>
           <DropdownMenuItem>
-            <DialogTrigger>Profile</DialogTrigger>
+          Profile
           </DropdownMenuItem>
+          </DialogTrigger>
           <DropdownMenuSeparator />
 
           <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
